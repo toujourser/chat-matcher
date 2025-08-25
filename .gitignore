@@ -1,0 +1,8 @@
+.DS_Store
+*.swp
+*.swo
+*.pyc
+.idea/
+.vscode/
+__pycache__/
+go.sum
