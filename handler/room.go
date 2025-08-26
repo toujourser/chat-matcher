@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"sync"
 
@@ -73,6 +74,7 @@ func (rm *RoomManager) handleMessages(room *Room, user *User) {
 			log.Printf("Read error: %v", err)
 			break
 		}
+		fmt.Printf("Received message: %+v from %s\n", msg, user.ID)
 		msg.From = user.ID
 		room.MsgChan <- msg
 	}
@@ -93,5 +95,7 @@ func (rm *RoomManager) cleanupUser(room *Room, userID string) {
 		close(room.MsgChan)
 		delete(rm.rooms, room.ID)
 	}
+
+	delete(matcher.userStates, userID)
 	rm.mu.Unlock()
 }
