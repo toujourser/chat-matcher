@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"math/rand"
 	"sync"
 )
@@ -9,11 +10,13 @@ type Matcher struct {
 	waitingUsers []string // 等待匹配的用户ID队列
 	mu           sync.Mutex
 	userStates   map[string]UserState // 用户状态map
+	storage      Storage              // 添加存储接口
 }
 
-func NewMatcher() *Matcher {
+func NewMatcher(storage Storage) *Matcher {
 	return &Matcher{
 		userStates: make(map[string]UserState),
+		storage:    storage,
 	}
 }
 
@@ -44,6 +47,16 @@ func (m *Matcher) RequestMatch(userID string) (string, string, bool) {
 	// 更新状态
 	m.userStates[userID] = StateChatting
 	m.userStates[partnerID] = StateChatting
+
+	// 记录匹配次数
+	if m.storage != nil {
+		if err := m.storage.IncrementMatchCount(userID); err != nil {
+			log.Printf("Failed to increment match count for user %s: %v", userID, err)
+		}
+		if err := m.storage.IncrementMatchCount(partnerID); err != nil {
+			log.Printf("Failed to increment match count for user %s: %v", partnerID, err)
+		}
+	}
 
 	// 生成roomID (简单用userID+partnerID)
 	roomID := userID + "-" + partnerID

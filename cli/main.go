@@ -337,9 +337,9 @@ func (m model) viewHelp() string {
 	s += "\n\n"
 	s += menuStyle.Render("服务器信息:")
 	s += "\n"
-	s += normalStyle.Render("• 匹配接口: POST http://127.0.0.1:8080/match")
+	s += normalStyle.Render("• 匹配接口: POST http://127.0.0.1:9093/api/match")
 	s += "\n"
-	s += normalStyle.Render("• WebSocket: ws://127.0.0.1:8080/ws")
+	s += normalStyle.Render("• WebSocket: ws://127.0.0.1:9093/api/ws")
 	s += "\n\n"
 	s += menuStyle.Render("按任意键返回主菜单")
 
@@ -468,7 +468,7 @@ func (m model) requestMatch() tea.Msg {
 	req := MatchRequest{UserID: m.userID}
 	reqBody, _ := json.Marshal(req)
 
-	resp, err := http.Post("http://127.0.0.1:8080/match", "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post("http://127.0.0.1:9093/api/match", "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
 		return matchFailMsg{}
 	}
@@ -496,7 +496,7 @@ func (m model) requestMatch() tea.Msg {
 
 // 连接WebSocket
 func (m model) connectWebSocket() tea.Msg {
-	u := url.URL{Scheme: "ws", Host: "127.0.0.1:8080", Path: "/ws"}
+	u := url.URL{Scheme: "ws", Host: "127.0.0.1:9093", Path: "/api/ws"}
 	q := u.Query()
 	q.Set("room", m.roomID)
 	q.Set("user", m.userID)

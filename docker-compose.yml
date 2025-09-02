@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  chat-matcher:
+    build: .
+    container_name: chat-matcher-app
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/static/index.html"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - chat-network
+
+  # 可选：添加 nginx 反向代理
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: chat-matcher-nginx
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - chat-matcher
+  #   restart: unless-stopped
+  #   networks:
+  #     - chat-network
+
+networks:
+  chat-network:
+    driver: bridge

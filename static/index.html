@@ -26,8 +26,8 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             padding: 2rem;
             width: 100%;
-            max-width: 500px;
-            min-height: 600px;
+            max-width: 700px;
+            min-height: 900px;
         }
 
         .logo {
@@ -137,7 +137,7 @@
         /* 聊天页面样式 */
         .chat-page {
             display: none;
-            height: 600px;
+            height: 800px;
             flex-direction: column;
         }
 
@@ -406,8 +406,8 @@
 </div>
 
 <script>
-    const backendUrl = 'http://localhost:8080';
-    const websocketUrl = 'ws://localhost:8080';
+    const backendUrl = 'http://localhost:9093';
+    const websocketUrl = 'ws://localhost:9093';
 
     class ChatRoom {
         constructor() {
@@ -507,7 +507,7 @@
             this.showStatus('正在寻找聊天伙伴...');
 
             try {
-                const response = await fetch(`${backendUrl}/match`, {
+                const response = await fetch(`${backendUrl}/api/match`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -527,7 +527,7 @@
                     this.enterChatRoom();
                 } else {
                     // 匹配失败，5秒后重试
-                    this.showStatus('暂时没有找到聊天伙伴，5秒后重新匹配...', 'failed');
+                    // this.showStatus('暂时没有找到聊天伙伴，5秒后重新匹配...', 'failed');
                     this.matchInterval = setTimeout(() => {
                         if (this.isMatching) {
                             this.attemptMatch();
@@ -562,7 +562,7 @@
         }
 
         connectWebSocket() {
-            const wsUrl = `${websocketUrl}/ws?room=${this.currentRoomId}&user=${this.currentUserId}`;
+            const wsUrl = `${websocketUrl}/api/ws?room=${this.currentRoomId}&user=${this.currentUserId}`;
 
             try {
                 this.websocket = new WebSocket(wsUrl);
