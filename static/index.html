@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>随机匹配聊天室</title>
     <style>
+        :root {
+            /* 深色主题变量 */
+            --bg-primary: hsl(222.2 84% 4.9%);
+            --bg-secondary: hsl(217.2 32.6% 17.5%);
+            --text-primary: hsl(210 40% 98%);
+            --text-secondary: hsl(215.4 16.3% 46.9%);
+            --border-color: hsl(217.2 32.6% 17.5%);
+            --accent-color: hsl(221.2 83.2% 53.3%);
+            --error-color: hsl(0 62.8% 30.6%);
+            --success-color: hsl(142.1 76.2% 36.3%);
+        }
+
+        [data-theme="light"] {
+            /* 浅色主题变量 */
+            --bg-primary: hsl(0 0% 100%);
+            --bg-secondary: hsl(210 40% 98%);
+            --text-primary: hsl(222.2 84% 4.9%);
+            --text-secondary: hsl(215.4 16.3% 46.9%);
+            --border-color: hsl(214.3 31.8% 91.4%);
+            --accent-color: hsl(221.2 83.2% 53.3%);
+            --error-color: hsl(0 62.8% 50.6%);
+            --success-color: hsl(142.1 76.2% 36.3%);
+        }
         * {
             margin: 0;
             padding: 0;
@@ -13,14 +36,15 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: hsl(222.2 84% 4.9%);
-            color: hsl(210 40% 98%);
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 0;
             padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
             /* 移动端优化 */
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -28,8 +52,8 @@
         }
 
         .container {
-            background: hsl(222.2 84% 4.9%);
-            border: 1px solid hsl(217.2 32.6% 17.5%);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             padding: 1rem;
@@ -37,6 +61,8 @@
             max-width: 768px;
             min-height: 600px;
             margin: 0.5rem;
+            position: relative;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
             /* 移动端适配 */
             height: calc(100vh - 1rem);
             display: flex;
@@ -63,18 +89,52 @@
         .logo {
             text-align: center;
             margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            /* 移动端优化 */
+            -webkit-appearance: none;
+            touch-action: manipulation;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle:active {
+            transform: translateY(1px);
         }
 
         .logo h1 {
-            color: hsl(210 40% 98%);
+            color: var(--text-primary);
             font-size: 1.875rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
         }
 
         .logo p {
-            color: hsl(215.4 16.3% 46.9%);
+            color: var(--text-secondary);
             font-size: 0.875rem;
+            transition: color 0.3s ease;
         }
 
         /* 移动端 logo 优化 */
@@ -108,18 +168,25 @@
         .input-group label {
             display: block;
             margin-bottom: 0.5rem;
-            color: hsl(210 40% 98%);
+            color: var(--text-primary);
             font-weight: 500;
             font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .input-with-button {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
         }
 
         .input-group input {
-            width: 100%;
+            flex: 1;
             padding: 0.875rem 1rem;
-            background: hsl(222.2 84% 4.9%);
-            border: 1px solid hsl(217.2 32.6% 17.5%);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: hsl(210 40% 98%);
+            color: var(--text-primary);
             font-size: 1rem;
             transition: all 0.2s ease;
             /* 移动端优化 */
@@ -127,14 +194,44 @@
             -webkit-border-radius: 6px;
         }
 
+        .random-name-btn {
+            padding: 0.875rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.125rem;
+            transition: all 0.2s ease;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            /* 移动端优化 */
+            -webkit-appearance: none;
+            touch-action: manipulation;
+        }
+
+        .random-name-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .random-name-btn:active {
+            transform: translateY(1px);
+        }
+
         .input-group input:focus {
             outline: none;
-            border-color: hsl(210 40% 98%);
-            box-shadow: 0 0 0 2px hsl(217.2 32.6% 17.5%);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
         }
 
         .input-group input::placeholder {
-            color: hsl(215.4 16.3% 46.9%);
+            color: var(--text-secondary);
         }
 
         /* 移动端输入框优化 */
@@ -145,13 +242,19 @@
                 /* 防止iOS自动缩放 */
                 transform: scale(1);
             }
+            
+            .random-name-btn {
+                width: 52px;
+                height: 52px;
+                font-size: 1.25rem;
+            }
         }
 
         .match-btn {
             width: 100%;
             padding: 0.875rem 1rem;
-            background: hsl(210 40% 98%);
-            color: hsl(222.2 84% 4.9%);
+            background: var(--accent-color);
+            color: white;
             border: none;
             border-radius: 6px;
             font-size: 1rem;
@@ -164,7 +267,7 @@
         }
 
         .match-btn:hover:not(:disabled) {
-            background: hsl(210 40% 95%);
+            background: hsl(221.2 83.2% 48.3%);
         }
 
         .match-btn:active {
@@ -172,8 +275,8 @@
         }
 
         .match-btn:disabled {
-            background: hsl(217.2 32.6% 17.5%);
-            color: hsl(215.4 16.3% 46.9%);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
             cursor: not-allowed;
         }
 
@@ -195,15 +298,15 @@
         }
 
         .status.matching {
-            background: hsl(221.2 83.2% 53.3% / 0.1);
-            color: hsl(221.2 83.2% 53.3%);
-            border: 1px solid hsl(221.2 83.2% 53.3% / 0.2);
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-color);
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
         .status.failed {
-            background: hsl(0 62.8% 30.6% / 0.1);
-            color: hsl(0 62.8% 30.6%);
-            border: 1px solid hsl(0 62.8% 30.6% / 0.2);
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
         .loading {
@@ -234,16 +337,17 @@
         }
 
         .chat-header {
-            background: hsl(222.2 84% 4.9%);
-            color: hsl(210 40% 98%);
+            background: var(--bg-primary);
+            color: var(--text-primary);
             padding: 1rem;
-            border: 1px solid hsl(217.2 32.6% 17.5%);
+            border: 1px solid var(--border-color);
             border-radius: 6px 6px 0 0;
             margin: -1rem -1rem 0 -1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
+            transition: all 0.3s ease;
         }
 
         .chat-info h3 {
@@ -253,13 +357,13 @@
         }
 
         .chat-info p {
-            color: hsl(215.4 16.3% 46.9%);
+            color: var(--text-secondary);
             font-size: 0.75rem;
         }
 
         .leave-btn {
-            background: hsl(0 62.8% 30.6%);
-            color: hsl(210 40% 98%);
+            background: var(--error-color);
+            color: white;
             border: none;
             padding: 0.5rem 0.75rem;
             border-radius: 4px;
@@ -345,6 +449,11 @@
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
+            align-items: flex-start;
+        }
+
+        .message-group.own .message-content {
+            align-items: flex-end;
         }
 
         .message-header {
@@ -360,12 +469,12 @@
         .sender-name {
             font-size: 0.75rem;
             font-weight: 600;
-            color: hsl(210 40% 98%);
+            color: var(--text-primary);
         }
 
         .message-time {
             font-size: 0.625rem;
-            color: hsl(215.4 16.3% 46.9%);
+            color: var(--text-secondary);
         }
 
         /* 移动端消息优化 */
@@ -405,19 +514,21 @@
             font-size: 0.875rem;
             line-height: 1.4;
             position: relative;
+            display: inline-block;
+            max-width: 100%;
             /* 移动端文本选择 */
             -webkit-user-select: text;
             user-select: text;
         }
 
         .message.own {
-            background: hsl(221.2 83.2% 53.3%);
+            background: var(--accent-color);
             color: white;
         }
 
         .message.other {
-            background: hsl(217.2 32.6% 17.5%);
-            color: hsl(210 40% 98%);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
         .message.image {
@@ -463,23 +574,24 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: hsl(217.2 32.6% 17.5%);
+            background: var(--border-color);
         }
 
         .system-text {
             padding: 0 1rem;
             font-size: 0.75rem;
-            color: hsl(215.4 16.3% 46.9%);
+            color: var(--text-secondary);
             white-space: nowrap;
         }
 
         .image-preview {
             display: none;
             padding: 1rem;
-            background: hsl(217.2 32.6% 17.5%);
-            border: 1px solid hsl(217.2 32.6% 17.5%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             margin-bottom: 1rem;
+            transition: all 0.3s ease;
         }
 
         .image-preview img {
@@ -530,20 +642,21 @@
             gap: 0.5rem;
             align-items: center;
             padding: 1rem;
-            border-top: 1px solid hsl(217.2 32.6% 17.5%);
+            border-top: 1px solid var(--border-color);
             margin: 0 -1rem -1rem -1rem;
             flex-shrink: 0;
             /* 移动端优化 */
-            background: hsl(222.2 84% 4.9%);
+            background: var(--bg-primary);
+            transition: all 0.3s ease;
             /* 防止虚拟键盘推起布局 */
             position: relative;
         }
 
         .image-btn {
             padding: 0.5rem;
-            background: hsl(217.2 32.6% 17.5%);
-            color: hsl(210 40% 98%);
-            border: 1px solid hsl(217.2 32.6% 17.5%);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
             font-size: 1rem;
@@ -560,7 +673,8 @@
         }
 
         .image-btn:hover {
-            background: hsl(217.2 32.6% 22.5%);
+            background: var(--accent-color);
+            color: white;
         }
 
         .image-btn:active {
@@ -570,29 +684,35 @@
         .message-input {
             flex: 1;
             padding: 0.5rem 0.75rem;
-            background: hsl(222.2 84% 4.9%);
-            border: 1px solid hsl(217.2 32.6% 17.5%);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: hsl(210 40% 98%);
+            color: var(--text-primary);
             font-size: 0.875rem;
-            height: 36px;
+            min-height: 36px;
+            max-height: 120px;
+            line-height: 1.4;
+            transition: all 0.2s ease;
             /* 移动端优化 */
             -webkit-appearance: none;
             resize: none;
+            overflow-y: auto;
+            /* 多行输入优化 */
+            -webkit-overflow-scrolling: touch;
         }
 
         .message-input:focus {
             outline: none;
-            border-color: hsl(210 40% 98%);
+            border-color: var(--accent-color);
         }
 
         .message-input::placeholder {
-            color: hsl(215.4 16.3% 46.9%);
+            color: var(--text-secondary);
         }
 
         .send-btn {
             padding: 0.5rem 1rem;
-            background: hsl(221.2 83.2% 53.3%);
+            background: var(--accent-color);
             color: white;
             border: none;
             border-radius: 6px;
@@ -616,8 +736,8 @@
         }
 
         .send-btn:disabled {
-            background: hsl(217.2 32.6% 17.5%);
-            color: hsl(215.4 16.3% 46.9%);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
             cursor: not-allowed;
         }
 
@@ -629,17 +749,20 @@
                 /* 保持在屏幕底部 */
                 position: sticky;
                 bottom: 0;
+                align-items: flex-end;
             }
             
             .image-btn {
                 width: 40px;
                 height: 40px;
                 font-size: 0.875rem;
+                align-self: flex-end;
             }
             
             .message-input {
                 font-size: 1rem;
-                height: 40px;
+                min-height: 40px;
+                max-height: 100px;
                 padding: 0.625rem 0.75rem;
                 /* 防止iOS自动缩放 */
                 transform: scale(1);
@@ -650,6 +773,7 @@
                 padding: 0.625rem 0.875rem;
                 font-size: 0.875rem;
                 min-width: 60px;
+                align-self: flex-end;
             }
         }
 
@@ -666,6 +790,7 @@
 <div class="container">
     <!-- Logo -->
     <div class="logo">
+        <button id="themeToggle" class="theme-toggle" title="切换主题">🌙</button>
         <h1>💬 聊天室</h1>
         <p>随机匹配，畅聊无限</p>
     </div>
@@ -674,7 +799,10 @@
     <div id="matchPage" class="match-page">
         <div class="input-group">
             <label for="username">用户名</label>
-            <input type="text" id="username" placeholder="请输入您的用户名" maxlength="20">
+            <div class="input-with-button">
+                <input type="text" id="username" placeholder="请输入您的用户名" maxlength="20">
+                <button id="randomNameBtn" class="random-name-btn" title="生成随机用户名">🎲</button>
+            </div>
         </div>
 
         <button id="matchBtn" class="match-btn">开始匹配</button>
@@ -705,7 +833,7 @@
         <div class="message-input-group">
             <input type="file" id="imageInput" class="hidden-file-input" accept="image/*">
             <button id="imageBtn" class="image-btn" title="发送图片">📷</button>
-            <input type="text" id="messageInput" class="message-input" placeholder="输入消息..." maxlength="500">
+            <textarea id="messageInput" class="message-input" placeholder="输入消息..." maxlength="500" rows="1"></textarea>
             <button id="sendBtn" class="send-btn">发送</button>
         </div>
     </div>
@@ -724,17 +852,23 @@
             this.isMatching = false;
             this.matchInterval = null;
             this.selectedImageFile = null;
+            this.isDarkTheme = true; // 默认深色主题
 
             this.initElements();
             this.bindEvents();
+            this.initTheme();
         }
 
         initElements() {
             // 匹配页面元素
             this.matchPage = document.getElementById('matchPage');
             this.usernameInput = document.getElementById('username');
+            this.randomNameBtn = document.getElementById('randomNameBtn');
             this.matchBtn = document.getElementById('matchBtn');
             this.statusDiv = document.getElementById('status');
+
+            // 主题切换元素
+            this.themeToggle = document.getElementById('themeToggle');
 
             // 聊天页面元素
             this.chatPage = document.getElementById('chatPage');
@@ -756,8 +890,12 @@
 
         bindEvents() {
             this.matchBtn.addEventListener('click', () => this.startMatching());
+            this.randomNameBtn.addEventListener('click', () => this.generateRandomName());
             this.sendBtn.addEventListener('click', () => this.sendMessage());
             this.leaveBtn.addEventListener('click', () => this.leaveChat());
+
+            // 主题切换事件
+            this.themeToggle.addEventListener('click', () => this.toggleTheme());
 
             // 图片相关事件
             this.imageBtn.addEventListener('click', () => this.imageInput.click());
@@ -765,11 +903,15 @@
             this.sendImageBtn.addEventListener('click', () => this.sendImage());
             this.cancelImageBtn.addEventListener('click', () => this.cancelImage());
 
-            // 回车发送消息
-            this.messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
+            // 输入框自动调整高度
+            this.messageInput.addEventListener('input', () => this.autoResizeInput());
+            this.messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     this.sendMessage();
+                } else if (e.key === 'Enter' && e.shiftKey) {
+                    // Shift+Enter 换行，延迟调整高度
+                    setTimeout(() => this.autoResizeInput(), 0);
                 }
             });
 
@@ -780,6 +922,9 @@
                     this.startMatching();
                 }
             });
+
+            // 页面关闭或刷新确认
+            this.setupBeforeUnloadWarning();
 
             // 移动端优化：处理虚拟键盘
             this.handleMobileKeyboard();
@@ -818,6 +963,61 @@
             if (this.messagesDiv) {
                 this.messagesDiv.scrollTop = this.messagesDiv.scrollHeight;
             }
+        }
+
+        autoResizeInput() {
+            const textarea = this.messageInput;
+            // 重置高度以获取真实内容高度
+            textarea.style.height = 'auto';
+            
+            // 计算所需高度
+            const scrollHeight = textarea.scrollHeight;
+            const maxHeight = this.isMobile() ? 100 : 120; // 移动端限制更低
+            const minHeight = this.isMobile() ? 40 : 36;
+            
+            // 设置新高度，但不超过最大高度
+            const newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
+            textarea.style.height = newHeight + 'px';
+            
+            // 如果内容超过最大高度，显示滚动条
+            if (scrollHeight > maxHeight) {
+                textarea.style.overflowY = 'auto';
+            } else {
+                textarea.style.overflowY = 'hidden';
+            }
+            
+            // 调整后滚动到底部
+            setTimeout(() => this.scrollToBottom(), 0);
+        }
+
+        initTheme() {
+            // 从 localStorage 获取保存的主题设置
+            const savedTheme = localStorage.getItem('chatTheme');
+            if (savedTheme === 'light') {
+                this.isDarkTheme = false;
+                document.documentElement.setAttribute('data-theme', 'light');
+                this.updateThemeIcon();
+            }
+        }
+
+        toggleTheme() {
+            this.isDarkTheme = !this.isDarkTheme;
+            
+            if (this.isDarkTheme) {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('chatTheme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('chatTheme', 'light');
+            }
+            
+            this.updateThemeIcon();
+        }
+
+        updateThemeIcon() {
+            // 更新主题切换按钮的图标
+            this.themeToggle.textContent = this.isDarkTheme ? '🌞' : '🌙';
+            this.themeToggle.title = this.isDarkTheme ? '切换到浅色主题' : '切换到深色主题';
         }
 
         showStatus(message, type = 'matching') {
@@ -903,6 +1103,9 @@
             // 建立WebSocket连接
             this.connectWebSocket();
 
+            // 初始化输入框高度
+            this.autoResizeInput();
+
             // 聚焦到消息输入框
             this.messageInput.focus();
         }
@@ -962,6 +1165,8 @@
                 this.websocket.send(JSON.stringify(message));
                 this.addMessage(content, this.currentUserId, false);
                 this.messageInput.value = '';
+                // 发送消息后重置输入框高度
+                this.autoResizeInput();
             } catch (error) {
                 console.error('发送消息失败:', error);
                 this.addSystemMessage('消息发送失败');
@@ -1189,6 +1394,68 @@
             this.isMatching = false;
             this.currentRoomId = '';
             this.currentPartnerId = '';
+        }
+
+        generateRandomName() {
+            const adjectives = [
+                '快乐的', '聪明的', '勇敢的', '温柔的', '活泼的', '可爱的', '优雅的', '幽默的',
+                '热情的', '友善的', '机智的', '淡定的', '开朗的', '文艺的', '神秘的', '阳光的',
+                '睿智的', '潇洒的', '清新的', '灵动的', '温暖的', '浪漫的', '自信的', '独特的',
+                '安静的', '沉稳的', '活力的', '优秀的', '善良的', '纯真的', '梦幻的', '酷炫的',
+                '慵懒的', '俏皮的', '典雅的', '淘气的', '呆萌的', '迷人的', '乖巧的', '灿烂的',
+                '温和的', '坚强的', '柔软的', '清雅的', '古灵的', '精怪的', '甜美的', '帅气的',
+                '迷糊的', '机敏的', '顽皮的', '萌萌的', '飘逸的', '静谧的', '欢快的', '闪亮的',
+                // 英文形容词
+                'Happy', 'Smart', 'Brave', 'Gentle', 'Cute', 'Sunny', 'Active', 'Elegant',
+                'Mystery', 'Calm', 'Funny', 'Kind', 'Clever', 'Warm', 'Cool', 'Strong',
+                'Dream', 'Sweet', 'Fresh', 'Magic', 'Wild', 'Swift', 'Quiet', 'Bright',
+                'Epic', 'Royal', 'Noble', 'Lucky', 'Pure', 'Wise', 'Bold', 'Silent'
+            ];
+            
+            const nouns = [
+                '小猫', '小狗', '熊猫', '兔子', '松鼠', '海豚', '企鹅', '狐狸',
+                '小鸟', '蝴蝶', '独角兽', '星星', '月亮', '太阳', '彩虹', '云朵',
+                '花朵', '树叶', '雪花', '露珠', '微风', '晨光', '夕阳', '流星',
+                '小鹿', '天鹅', '蜜蜂', '萤火虫', '海星', '贝壳', '珊瑚', '水母',
+                '樱花', '玫瑰', '向日葵', '薰衣草', '茉莉', '百合', '牡丹', '荷花',
+                '竹子', '柳树', '梧桐', '银杏', '枫叶', '青苔', '小草', '芦苇',
+                '钻石', '珍珠', '翡翠', '水晶', '琥珀', '玛瑙', '紫晶', '宝石',
+                '春风', '夏雨', '秋叶', '冬雪', '朝霞', '晚霞', '星河', '银河',
+                // 英文名词
+                'Cat', 'Dog', 'Rabbit', 'Panda', 'Tiger', 'Lion', 'Elephant', 'Giraffe',
+                'Penguin', 'Dolphin', 'Butterfly', 'Bee', 'Bird', 'Swan', 'Peacock', 'Phoenix',
+                'Unicorn', 'Dragon', 'Fox', 'Squirrel', 'Deer', 'Hippo', 'Koala', 'Kangaroo',
+                'Octopus', 'Starfish', 'Shell', 'Coral', 'Rainbow', 'Star', 'Moon', 'Sun'
+            ];
+            
+            const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+            
+            const randomName = `${randomAdjective}${randomNoun}`;
+            this.usernameInput.value = randomName;
+            
+            // 添加轻微的动画效果
+            this.randomNameBtn.style.transform = 'rotate(180deg) translateY(1px)';
+            setTimeout(() => {
+                this.randomNameBtn.style.transform = '';
+            }, 200);
+        }
+
+        setupBeforeUnloadWarning() {
+            window.addEventListener('beforeunload', (e) => {
+                // 只有在聊天状态或匹配状态时才显示确认框
+                if (this.isInChatOrMatching()) {
+                    const message = '您正在聊天中，离开页面将断开连接。确定要离开吗？';
+                    e.preventDefault();
+                    e.returnValue = message;
+                    return message;
+                }
+            });
+        }
+
+        isInChatOrMatching() {
+            // 如果正在匹配或已经在聊天页面，则需要确认
+            return this.isMatching || this.chatPage.classList.contains('show');
         }
 
         resetToMatchPage() {

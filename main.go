@@ -36,11 +36,11 @@ func main() {
 	// 注册API路由
 	api := r.Group("/api")
 	{
-		api.POST("/match", handler.GinHandleMatch)
-		api.GET("/ws", handler.GinHandleWS)
-		api.GET("/chat/history", handler.GinHandleChatHistory)
-		api.GET("/user/stats", handler.GinHandleUserStats)
-		api.GET("/user/rooms", handler.GinHandleUserRooms)
+		api.POST("/match", handler.MatchHandle)
+		api.GET("/ws", handler.WSHandle)
+		api.GET("/chat/history", handler.ChatHistoryHandle)
+		api.GET("/user/stats", handler.UserStatsHandle)
+		api.GET("/user/rooms", handler.UserRoomsHandle)
 	}
 
 	// 静态文件服务
