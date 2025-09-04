@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -34,6 +36,33 @@ func MatchHandle(c *gin.Context) {
 		return
 	}
 
+	ctx, cancel := context.WithTimeout(c, 30*time.Second)
+	defer cancel()
+
+	interval := 1 * time.Second
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	var resp MatchResponse
+	for {
+		resp = match(req)
+		select {
+		case <-ctx.Done():
+			log.Println("超时或被取消，退出")
+			c.JSON(http.StatusOK, resp)
+			return
+
+		case <-ticker.C:
+			if resp.Matched {
+				log.Printf("用户 ID：%s, 匹配结果：%v, 房间 ID：%s, 对方 ID：%s", req.UserID, resp.Matched, resp.RoomID, resp.Partner)
+				c.JSON(http.StatusOK, resp)
+				return
+			}
+		}
+	}
+}
+
+func match(req MatchRequest) MatchResponse {
 	resp := MatchResponse{Matched: false}
 	// 如果用户已经在聊天状态，则直接返回匹配结果
 	userState := matcher.CheckUserState(req.UserID)
@@ -56,10 +85,7 @@ func MatchHandle(c *gin.Context) {
 			roomManager.CreateRoom(roomID, req.UserID, partnerID)
 		}
 	}
-
-	log.Printf("用户 ID：%s, 匹配结果：%v, 房间 ID：%s, 对方 ID：%s", req.UserID, resp.Matched, resp.RoomID, resp.Partner)
-
-	c.JSON(http.StatusOK, resp)
+	return resp
 }
 
 // WSHandle 处理WebSocket连接 (Gin版本)

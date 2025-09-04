@@ -126,7 +126,9 @@ func (rm *RoomManager) cleanupUser(room *Room, userID string) {
 			}
 		}
 
-		close(room.MsgChan)
+		if _, ok := rm.rooms[room.ID]; ok {
+			close(room.MsgChan)
+		}
 		delete(rm.rooms, room.ID)
 	}
 
