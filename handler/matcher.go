@@ -4,6 +4,8 @@ import (
 	"log"
 	"math/rand"
 	"sync"
+
+	"github.com/samber/lo"
 )
 
 type Matcher struct {
@@ -11,12 +13,20 @@ type Matcher struct {
 	mu           sync.Mutex
 	userStates   map[string]UserState // 用户状态map
 	storage      Storage              // 添加存储接口
+	aiClient     *AIClient            // AI客户端
 }
 
 func NewMatcher(storage Storage) *Matcher {
+	// 初始化AI客户端
+	aiClient, err := NewAIClient()
+	if err != nil {
+		log.Printf("Warning: Failed to initialize AI client: %v", err)
+	}
+
 	return &Matcher{
 		userStates: make(map[string]UserState),
 		storage:    storage,
+		aiClient:   aiClient,
 	}
 }
 
@@ -83,4 +93,39 @@ func (m *Matcher) CancelMatch(userID string) {
 		}
 	}
 	m.userStates[userID] = StateIdle
+}
+
+// MatchWithAI 与AI用户匹配
+func (m *Matcher) MatchWithAI(userID string) (string, string, bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	// 生成AI用户ID
+	aiUserID := GenerateAIUserID()
+
+	// 更新状态
+	m.userStates[userID] = StateChatting
+	m.userStates[aiUserID] = StateChatting
+
+	// 记录匹配次数
+	if m.storage != nil {
+		if err := m.storage.IncrementMatchCount(userID); err != nil {
+			log.Printf("Failed to increment match count for user %s: %v", userID, err)
+		}
+		// AI用户不记录匹配次数
+	}
+
+	// 从等待队列移除用户（如果在队列中）
+	m.waitingUsers = lo.Filter(m.waitingUsers, func(uid string, _ int) bool {
+		return uid != userID
+	})
+
+	// 生成roomID
+	roomID := userID + "-" + aiUserID
+	return roomID, aiUserID, true
+}
+
+// GetAIClient 获取AI客户端
+func (m *Matcher) GetAIClient() *AIClient {
+	return m.aiClient
 }

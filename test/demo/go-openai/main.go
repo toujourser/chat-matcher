@@ -84,8 +84,8 @@ func simpleChat(client *openai.Client) {
 		return
 	}
 
-	fmt.Printf("回答: %s\n", resp.Choices[0].Message.Content)
-	fmt.Printf("使用 tokens: %d\n", resp.Usage.TotalTokens)
+	log.Printf("回答: %s\n", resp.Choices[0].Message.Content)
+	log.Printf("使用 tokens: %d\n", resp.Usage.TotalTokens)
 }
 
 // 流式聊天
@@ -158,7 +158,7 @@ func multiTurnChat(client *openai.Client) {
 
 	// 添加 AI 的回答到对话历史
 	messages = append(messages, resp.Choices[0].Message)
-	fmt.Printf("AI: %s\n\n", resp.Choices[0].Message.Content)
+	log.Printf("AI: %s\n\n", resp.Choices[0].Message.Content)
 
 	// 继续对话
 	messages = append(messages, openai.ChatCompletionMessage{
@@ -173,7 +173,7 @@ func multiTurnChat(client *openai.Client) {
 		return
 	}
 
-	fmt.Printf("AI: %s\n", resp.Choices[0].Message.Content)
+	log.Printf("AI: %s\n", resp.Choices[0].Message.Content)
 }
 
 // 图像生成
@@ -193,7 +193,7 @@ func generateImage(client *openai.Client) {
 	}
 
 	if len(resp.Data) > 0 {
-		fmt.Printf("图像 URL: %s\n", resp.Data[0].URL)
+		log.Printf("图像 URL: %s\n", resp.Data[0].URL)
 	}
 }
 
@@ -216,8 +216,8 @@ func createEmbedding(client *openai.Client) {
 	}
 
 	for i, embedding := range resp.Data {
-		fmt.Printf("文本 %d 的 Embedding 维度: %d\n", i+1, len(embedding.Embedding))
-		fmt.Printf("前5个维度值: %.6f, %.6f, %.6f, %.6f, %.6f\n",
+		log.Printf("文本 %d 的 Embedding 维度: %d\n", i+1, len(embedding.Embedding))
+		log.Printf("前5个维度值: %.6f, %.6f, %.6f, %.6f, %.6f\n",
 			embedding.Embedding[0],
 			embedding.Embedding[1],
 			embedding.Embedding[2],

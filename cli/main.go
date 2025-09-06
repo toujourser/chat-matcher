@@ -553,7 +553,7 @@ func main() {
 
 	p := tea.NewProgram(initialModel(), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		fmt.Printf("程序运行出错: %v", err)
+		log.Printf("程序运行出错: %v", err)
 		os.Exit(1)
 	}
 }

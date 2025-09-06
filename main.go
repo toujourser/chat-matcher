@@ -1,7 +1,11 @@
 package main
 
 import (
+	"io"
 	"log"
+	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/toujourser/chat-matcher/handler"
@@ -9,6 +13,9 @@ import (
 )
 
 func main() {
+	// 配置日志输出到文件
+	setupLogger()
+
 	// 初始化Redis连接
 	redisConfig := handler.RedisConfig{
 		Addr:     "localhost:6379", // 可以通过环境变量REDIS_ADDR覆盖
@@ -46,4 +53,34 @@ func main() {
 	// 静态文件服务
 	r.Static("/static", "./static")
 	log.Fatal(r.Run(port))
+}
+
+// setupLogger 配置日志输出到文件
+func setupLogger() {
+	// 创建 logs 目录
+	logsDir := "logs"
+	if err := os.MkdirAll(logsDir, 0755); err != nil {
+		log.Printf("Failed to create logs directory: %v", err)
+		return
+	}
+
+	// 生成日志文件名（按日期）
+	now := time.Now()
+	logFileName := filepath.Join(logsDir, "chat-matcher-"+now.Format("2006-01-02")+".log")
+
+	// 打开或创建日志文件
+	logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Printf("Failed to open log file: %v", err)
+		return
+	}
+
+	// 配置日志同时输出到控制台和文件
+	multiWriter := io.MultiWriter(os.Stdout, logFile)
+	log.SetOutput(multiWriter)
+
+	// 设置日志格式
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	log.Printf("Logger initialized. Logs will be saved to: %s", logFileName)
 }

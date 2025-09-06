@@ -36,7 +36,7 @@ func MatchHandle(c *gin.Context) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(c, 30*time.Second)
+	ctx, cancel := context.WithTimeout(c, 10*time.Second)
 	defer cancel()
 
 	interval := 1 * time.Second
@@ -48,7 +48,19 @@ func MatchHandle(c *gin.Context) {
 		resp = match(req)
 		select {
 		case <-ctx.Done():
-			log.Println("超时或被取消，退出")
+			// 超时后尝试与AI匹配
+			if !resp.Matched {
+				log.Printf("用户 %s 匹配超时，尝试与AI匹配", req.UserID)
+				roomID, aiUserID, matched := matcher.MatchWithAI(req.UserID)
+				if matched {
+					resp = MatchResponse{Matched: true, RoomID: roomID, Partner: aiUserID}
+					// 创建AI房间
+					roomManager.CreateAIRoom(roomID, req.UserID, aiUserID)
+					log.Printf("用户 %s 成功与AI %s 匹配，房间 ID：%s", req.UserID, aiUserID, roomID)
+				} else {
+					log.Printf("用户 %s AI匹配失败", req.UserID)
+				}
+			}
 			c.JSON(http.StatusOK, resp)
 			return
 
@@ -97,7 +109,7 @@ func WSHandle(c *gin.Context) {
 		return
 	}
 
-	log.Printf("User %s joined room %s", userID, roomID)
+	log.Printf("User [%s] joined room [%s]", userID, roomID)
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println(err)

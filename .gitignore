@@ -7,3 +7,8 @@
 __pycache__/
 go.sum
 chat-client.log
+
+# 日志文件和目录
+logs/
+*.log
+chat-matcher

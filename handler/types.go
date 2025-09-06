@@ -31,6 +31,18 @@ func GenerateMessageID() string {
 	return hex.EncodeToString(bytes)
 }
 
+// GenerateAIUserID 生成AI用户ID
+func GenerateAIUserID() string {
+	bytes := make([]byte, 6)
+	rand.Read(bytes)
+	return "ai_" + hex.EncodeToString(bytes)
+}
+
+// IsAIUser 检查是否为AI用户
+func IsAIUser(userID string) bool {
+	return len(userID) > 3 && userID[:3] == "ai_"
+}
+
 // UserState 用户状态
 type UserState string
 
@@ -40,9 +52,18 @@ const (
 	StateChatting UserState = "chatting"
 )
 
+// UserType 用户类型
+type UserType string
+
+const (
+	UserTypeHuman UserType = "human" // 真实用户
+	UserTypeAI    UserType = "ai"    // AI用户
+)
+
 // User 用户信息
 type User struct {
 	ID    string
+	Type  UserType // 用户类型
 	State UserState
 	Conn  *websocket.Conn // WS连接（聊天时使用）
 }
